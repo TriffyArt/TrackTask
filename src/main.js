@@ -1,60 +1,57 @@
-
-
 $(document).ready(function () {
-
   function loadTasks() {
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    $("#task-list").empty(); //clearing current list
+    tasks.sort((a, b) => sortByPriorityAndDate(a, b)); // Sort by priority and date
+    $("#task-list").empty(); // Clear current list
     tasks.forEach((task, index) => displayTask(task, index));
   }
 
   function saveTasks(tasks) {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
-  
+
   function renderTasks(filteredTasks) {
     $("#task-list").empty(); // Clear existing tasks
-
-    filteredTasks.forEach((task, index) => {
-        displayTask(task, index, filteredTasks);
-    });
-}
+    filteredTasks.forEach((task, index) => displayTask(task, index));
+  }
 
   function filterTasks() {
-    const selectedPriority = $("#priorityFilter").val()
-
+    const selectedPriority = $("#priorityFilter").val();
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     let filteredTasks = tasks;
 
     if (selectedPriority !== "all") {
-        filteredTasks = tasks.filter(task => task.priority === selectedPriority);
+      filteredTasks = tasks.filter(task => task.priority === selectedPriority);
     }
 
-    // Sort tasks by priority
-    const priorityOrder = { high: 1, medium: 2, low: 3 };
-    filteredTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+    // Sort tasks by priority and date
+    filteredTasks.sort((a, b) => sortByPriorityAndDate(a, b));
 
     renderTasks(filteredTasks);
+  }
 
-}
+  function sortByPriorityAndDate(a, b) {
+    const priorityOrder = { high: 1, medium: 2, low: 3 };
+    const priorityDifference = priorityOrder[a.priority] - priorityOrder[b.priority];
+    if (priorityDifference !== 0) return priorityDifference; // Sort by priority first
+    return new Date(a.date) - new Date(b.date); // Then by date
+  }
 
-
-  function displayTask(task, index, filteredTasks) {
+  function displayTask(task, index) {
     const taskDiv = $(`
-           <div class="task" data-index="${index}">
-              <div class="task-header">
-                  <span><strong>${task.title}</strong></span>
-                  <div>
-                      <button class="edit-task">Edit</button>
-                      <button class="remove-task">Remove</button>
-                  </div>
-              </div>
-  
-              <div class="task-details">${task.details}</div>
-              <div class="task-details">${task.date}</div>
-              <div class="task-details">${task.priority}</div>
+      <div class="task" data-index="${index}">
+        <div class="task-header">
+          <span><strong>${task.title}</strong></span>
+          <div>
+            <button class="edit-task">Edit</button>
+            <button class="remove-task">Remove</button>
           </div>
-      `);
+        </div>
+        <div class="task-details">${task.details}</div>
+        <div class="task-details">${task.date}</div>
+        <div class="task-details">${task.priority}</div>
+      </div>
+    `);
 
     taskDiv.find(".edit-task").on("click", () => editTask(index));
     taskDiv.find(".remove-task").on("click", () => removeTask(index));
@@ -64,33 +61,41 @@ $(document).ready(function () {
 
   $("#priorityFilter").on("change", filterTasks);
 
-
-
-
-  //add task @Triffy
+  // Add task
   $("#add-task").on("click", function () {
     const title = $("#task-title").val().trim();
     const details = $("#task-details").val().trim();
     const date = $("#Date").val();
     const priority = $("#priority").val();
 
-    if (!title || !details || !date) {
-      alert("All fields are required!");
+    if (!title || !details || !date || !priority) {
+      $("#error-message").text("All fields are required!").show();
       return;
     }
+
+    const today = new Date().setHours(0, 0, 0, 0);
+    const selectedDate = new Date(date).setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      $("#error-message").text("Cannot add tasks for past dates!").show();
+      return;
+    }
+
+    $("#error-message").hide(); // Hide error message on successful validation
 
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     tasks.push({ title, details, date, priority });
     saveTasks(tasks);
     loadTasks();
-    //empty
+
+    // Clear input fields
     $("#task-title").val("");
     $("#task-details").val("");
     $("#Date").val("");
     $("#priority").val("");
   });
 
-  //edit task @Triffy
+  // Edit task
   function editTask(index) {
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     const task = tasks[index];
@@ -110,7 +115,7 @@ $(document).ready(function () {
     loadTasks();
   }
 
-  // Remove task @Triffy
+  // Remove task
   function removeTask(index) {
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     tasks.splice(index, 1);
@@ -118,8 +123,5 @@ $(document).ready(function () {
     loadTasks();
   }
 
-
   loadTasks();
-
 });
-
