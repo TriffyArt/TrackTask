@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="src/style.css">
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <title></title>
+  <title>Task Tracker with Timers</title>
 </head>
 
 <body class="bg-slate-500">
@@ -44,17 +44,16 @@
       <label for="priorityFilter" class="block text-sm font-medium text-white mb-2 mt-5">Filter Priority</label>
             <select id="priorityFilter"
               class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500">
+              <option value="all">All</option>
               <option value="high">High</option>
               <option value="medium">Medium</option>
               <option value="low">Low</option>
           </select>
     </div>
 
+    <!-- Task List -->
+    <div id="task-list" class="mt-6 w-full max-w-[500px] bg-white rounded-lg shadow-md p-4"></div>
   </div>
-
-
-
-  <div id="task-list" class="mt-[20px]"></div>
 
  
   <script type="module" src="/src/main.js"></script>

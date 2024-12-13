@@ -1,108 +1,175 @@
-
-
 $(document).ready(function () {
-
+  // Load tasks from localStorage and render them
   function loadTasks() {
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    $("#task-list").empty(); //clearing current list
-    tasks.forEach((task, index) => displayTask(task, index));
+    const tasks = getTasksFromStorage();
+    tasks.sort(sortByPriorityAndDate);
+    renderTasks(tasks);
   }
 
+  // Save tasks to localStorage
   function saveTasks(tasks) {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
-  
-  function renderTasks(filteredTasks) {
-    $("#task-list").empty(); // Clear existing tasks
 
-    filteredTasks.forEach((task, index) => {
-        displayTask(task, index, filteredTasks);
-    });
-}
+  // Retrieve tasks from localStorage
+  function getTasksFromStorage() {
+    return JSON.parse(localStorage.getItem("tasks")) || [];
+  }
 
+  // Render tasks in the UI
+  function renderTasks(tasks) {
+    const taskList = $("#task-list");
+    taskList.empty();
+    tasks.forEach((task, index) => displayTask(task, index));
+  }
+
+  // Filter tasks based on priority
   function filterTasks() {
-    const selectedPriority = $("#priorityFilter").val()
-
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    let filteredTasks = tasks;
+    const selectedPriority = $("#priorityFilter").val();
+    let tasks = getTasksFromStorage();
 
     if (selectedPriority !== "all") {
-        filteredTasks = tasks.filter(task => task.priority === selectedPriority);
+      tasks = tasks.filter((task) => task.priority === selectedPriority);
     }
 
-    // Sort tasks by priority
+    tasks.sort(sortByPriorityAndDate);
+    renderTasks(tasks);
+  }
+
+  // Sort tasks by date and priority
+  function sortByPriorityAndDate(a, b) {
     const priorityOrder = { high: 1, medium: 2, low: 3 };
-    filteredTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+    const dateDifference = new Date(a.date) - new Date(b.date);
 
-    renderTasks(filteredTasks);
+    return dateDifference !== 0
+      ? dateDifference
+      : priorityOrder[a.priority] - priorityOrder[b.priority];
+  }
 
-}
+  // Display a single task
+  function displayTask(task, index) {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const taskDate = new Date(task.date).setHours(0, 0, 0, 0);
 
+    const isOverdue = taskDate < today;
 
-  function displayTask(task, index, filteredTasks) {
-    const taskDiv = $(`
-           <div class="task" data-index="${index}">
-              <div class="task-header">
-                  <span><strong>${task.title}</strong></span>
-                  <div>
-                      <button class="edit-task">Edit</button>
-                      <button class="remove-task">Remove</button>
-                  </div>
-              </div>
-  
-              <div class="task-details">${task.details}</div>
-              <div class="task-details">${task.date}</div>
-              <div class="task-details">${task.priority}</div>
+    const taskDiv = $(
+      `<div class="task ${task.done ? "done-task" : ""}" data-index="${index}">
+        <div class="task-header">
+          <input type="checkbox" class="mark-done" ${task.done ? "checked" : ""} />
+          <span class="task-title ${task.done ? "line-through" : isOverdue ? "red-text" : ""}"><strong>${task.title}</strong></span>
+          <div>
+            <button class="edit-task">Edit</button>
+            <button class="remove-task">Remove</button>
           </div>
-      `);
+        </div>
+        <div class="task-details"><span>Details:</span> ${task.details}</div>
+        <div class="task-details"><span>Due Date:</span> ${task.date}</div>
+        <div class="task-details"><span>Priority:</span> ${task.priority}</div>
+        <div class="task-timer">
+          <span class="elapsed-time">${formatTime(task.elapsedTime || 0)}</span>
+          <button class="start-stop-timer">${task.isRunning ? "Stop" : "Start"}</button>
+        </div>
+      </div>`
+    );
 
-    taskDiv.find(".edit-task").on("click", () => editTask(index));
+    taskDiv.find(".mark-done").on("change", () => toggleTaskDone(index));
+    taskDiv.find(".edit-task").on("click", () => openEditTaskUI(index, taskDiv));
     taskDiv.find(".remove-task").on("click", () => removeTask(index));
+    taskDiv.find(".start-stop-timer").on("click", () => toggleTimer(index));
 
     $("#task-list").append(taskDiv);
   }
 
-  $("#priorityFilter").on("change", filterTasks);
-
-
-
-
-  //add task @Triffy
+  // Add a new task
   $("#add-task").on("click", function () {
     const title = $("#task-title").val().trim();
     const details = $("#task-details").val().trim();
     const date = $("#Date").val();
     const priority = $("#priority").val();
 
-    if (!title || !details || !date) {
-      alert("All fields are required!");
+    if (!title || !details || !date || !priority) {
+      showError("All fields are required!");
       return;
     }
 
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    tasks.push({ title, details, date, priority });
+    if (new Date(date) < new Date().setHours(0, 0, 0, 0)) {
+      showError("Cannot add tasks for past dates!");
+      return;
+    }
+
+    hideError();
+
+    const tasks = getTasksFromStorage();
+    tasks.push({ title, details, date, priority, done: false, elapsedTime: 0, isRunning: false });
     saveTasks(tasks);
     loadTasks();
-    //empty
-    $("#task-title").val("");
-    $("#task-details").val("");
-    $("#Date").val("");
-    $("#priority").val("");
+
+    clearInputs();
   });
 
-  //edit task @Triffy
-  function editTask(index) {
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  // Open edit UI for a task
+  function openEditTaskUI(index, taskDiv) {
+    if (taskDiv.find(".edit-ui").length > 0) return;
+
+    const tasks = getTasksFromStorage();
     const task = tasks[index];
 
-    const newTitle = prompt("Edit task title:", task.title);
-    const newDetails = prompt("Edit task details:", task.details);
+    const editUI = $(
+      `<div class="edit-ui">
+        <input type="text" id="edit-title" value="${task.title}" class="edit-input" />
+        <textarea id="edit-details" class="edit-input">${task.details}</textarea>
+        <button id="save-edit">Save</button>
+        <button id="cancel-edit">Cancel</button>
+      </div>`
+    );
 
-    if (newTitle !== null && newTitle.trim() !== "") {
-      task.title = newTitle.trim();
-    }
-    if (newDetails !== null && newDetails.trim() !== "") {
-      task.details = newDetails.trim();
+    taskDiv.append(editUI);
+
+    $("#save-edit").on("click", () => saveEditTask(index));
+    $("#cancel-edit").on("click", () => editUI.remove());
+  }
+
+  // Save edited task
+  function saveEditTask(index) {
+    const tasks = getTasksFromStorage();
+    const task = tasks[index];
+
+    const newTitle = $("#edit-title").val().trim();
+    const newDetails = $("#edit-details").val().trim();
+
+    if (newTitle) task.title = newTitle;
+    if (newDetails) task.details = newDetails;
+
+    tasks[index] = task;
+    saveTasks(tasks);
+    loadTasks();
+  }
+
+  // Toggle task completion
+  function toggleTaskDone(index) {
+    const tasks = getTasksFromStorage();
+    tasks[index].done = !tasks[index].done;
+    saveTasks(tasks);
+    loadTasks();
+  }
+
+  // Toggle the stopwatch for a task
+  function toggleTimer(index) {
+    const tasks = getTasksFromStorage();
+    const task = tasks[index];
+
+    if (task.isRunning) {
+      clearInterval(task.timerInterval);
+      task.isRunning = false;
+    } else {
+      task.startTime = Date.now() - (task.elapsedTime || 0);
+      task.timerInterval = setInterval(() => {
+        task.elapsedTime = Date.now() - task.startTime;
+        saveTasks(tasks);
+        loadTasks();
+      }, 1000);
+      task.isRunning = true;
     }
 
     tasks[index] = task;
@@ -110,16 +177,44 @@ $(document).ready(function () {
     loadTasks();
   }
 
-  // Remove task @Triffy
+  // Format time in HH:MM:SS
+  function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, "0");
+    const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, "0");
+    const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  }
+
+  // Remove a task
   function removeTask(index) {
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    const tasks = getTasksFromStorage();
     tasks.splice(index, 1);
     saveTasks(tasks);
     loadTasks();
   }
 
+  // Show error message
+  function showError(message) {
+    $("#error-message").text(message).show();
+  }
 
+  // Hide error message
+  function hideError() {
+    $("#error-message").hide();
+  }
+
+  // Clear input fields
+  function clearInputs() {
+    $("#task-title").val("");
+    $("#task-details").val("");
+    $("#Date").val("");
+    $("#priority").val("");
+  }
+
+  // Event listener for priority filter
+  $("#priorityFilter").on("change", filterTasks);
+
+  // Initial load of tasks
   loadTasks();
-
 });
-
