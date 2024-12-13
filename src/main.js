@@ -92,7 +92,7 @@ $(document).ready(function () {
       showError("All fields are required!");
       return;
     }
-
+//WARNING:: comment this if statement to add past dates for testinng only the code will not work as expected and will not function properly
     if (new Date(date) < new Date().setHours(0, 0, 0, 0)) {
       showError("Cannot add tasks for past dates!");
       return;
@@ -117,7 +117,9 @@ $(document).ready(function () {
 
     const editUI = $(
       `<div class="edit-ui">
+        <h1 class="font-bold">Edit Title</h1>
         <input type="text" id="edit-title" value="${task.title}" class="edit-input" />
+        <h1 class="font-bold">Edit Task</h1>
         <textarea id="edit-details" class="edit-input">${task.details}</textarea>
         <button id="save-edit">Save</button>
         <button id="cancel-edit">Cancel</button>

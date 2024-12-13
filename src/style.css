@@ -70,3 +70,10 @@
 .done-task {
   background-color: #d4edda;
 }
+
+#edit-details {
+  box-shadow:0px 0px 2px #120652;
+}
+#edit-title {
+  box-shadow:0px 0px 2px #120652;
+}
