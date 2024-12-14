@@ -46,6 +46,26 @@ $(document).ready(function () {
       : priorityOrder[a.priority] - priorityOrder[b.priority];
   }
 
+  function groupTasksByDate() {
+    const tasks = getTasksFromStorage();
+  
+    // Aggregate elapsed time for each date
+    const groupedData = tasks.reduce((acc, task) => {
+      if (!acc[task.date]) {
+        acc[task.date] = 0; // Initialize elapsed time
+      }
+      acc[task.date] += task.elapsedTime / 3600000; // Convert ms to hours
+      return acc;
+    }, {});
+  
+    // Sort dates and prepare data for the chart
+    const sortedDates = Object.keys(groupedData).sort((a, b) => new Date(a) - new Date(b));
+    const elapsedTimes = sortedDates.map(date => groupedData[date]);
+  
+    return { dates: sortedDates, elapsedTimes };
+  }
+  
+
   // Display a single task
   function displayTask(task, index) {
     const today = new Date().setHours(0, 0, 0, 0);
@@ -160,33 +180,35 @@ $(document).ready(function () {
   function toggleTimer(index) {
     const tasks = getTasksFromStorage();
     const task = tasks[index];
-
+  
     if (task.isRunning) {
       clearInterval(task.timerInterval);
+      task.elapsedTime = Date.now() - task.startTime; // Update elapsed time
       task.isRunning = false;
     } else {
       task.startTime = Date.now() - (task.elapsedTime || 0);
       task.timerInterval = setInterval(() => {
-        task.elapsedTime = Date.now() - task.startTime;
+        task.elapsedTime = Date.now() - task.startTime; // Update elapsed time every second
         saveTasks(tasks);
         loadTasks();
       }, 1000);
       task.isRunning = true;
     }
-
+  
     tasks[index] = task;
     saveTasks(tasks);
     loadTasks();
   }
+  
 
   // Format time in HH:MM:SS
   function formatTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, "0");
-    const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, "0");
+    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
     const seconds = (totalSeconds % 60).toString().padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
+    return `${minutes}:${seconds}`;
   }
+  
 
   // Remove a task
   function removeTask(index) {

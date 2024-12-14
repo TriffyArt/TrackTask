@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="src/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>Daily Summary</title>
+</head>
+
+<body class="bg-slate-500">
+    <div class="flex justify-center flex-col items-center mt-6">
+        <div class="container max-w-[500px] m-[20px auto] p-5 bg-white rounded-lg shadow-md shadow-black">
+            <h1 class="text-lg font-bold">Daily Summary</h1>
+        </div>
+        <div id="daily-summary" class="mt-6 w-full max-w-[500px] bg-white rounded-lg shadow-md p-4"></div>
+    </div>
+
+    <div class="flex justify-center gap-4 mt-6">
+        <button id="back-to-main"
+            class="mb-4 w-24 p-3 text-base font-bold text-[#fff] bg-[#66fa95] border-none rounded-md cursor-pointer">Back to Main</button>
+        <button id="view-dashboard"
+            class="mb-4 w-24 p-3 text-base font-bold text-[#fff] bg-[#66fa95] border-none rounded-md cursor-pointer">
+            Go to Dashboard
+        </button>
+    </div>
+
+
+    <script type="module">
+        $("#view-dashboard").on("click", () => {
+            window.location.href = "dashboard.html"; // Navigate to dashboard
+        });
+    </script>
+
+
+    <script type="module" src="/src/daily-summary.js"></script>
+</body>
+
+</html>

@@ -11,6 +11,15 @@
 
 <body class="bg-slate-500">
 
+  <div class="flex justify-center gap-4 mt-6">
+    <button id="view-dashboard"
+      class="mb-4 w-full p-3 text-base font-bold text-[#fff] bg-[#66fa95] border-none rounded-md cursor-pointer">
+      Go to Dashboard
+    </button>
+    <button id="view-daily-summary" class="p-3 bg-green-500 text-white rounded-md">Daily Summary</button>
+    <button id="view-weekly-summary" class="p-3 bg-purple-500 text-white rounded-md">Weekly Summary</button>
+  </div>
+
   <div class="flex justify-center flex-col items-center mt-6">
     <div class="container w-full max-w-[500px] m-[20px auto] p-5 bg-white rounded-lg shadow-md shadow-black ">
       <input class="w-full mb-4 p-3 text-base border-white border-[1px] border-solid rounded-md" type="text"
@@ -27,6 +36,7 @@
           <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">Select Priority</label>
           <select id="priority"
             class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500">
+
             <option value="high">High</option>
             <option value="medium">Medium</option>
             <option value="low">Low</option>
@@ -42,20 +52,33 @@
 
     <div class="">
       <label for="priorityFilter" class="block text-sm font-medium text-white mb-2 mt-5">Filter Priority</label>
-            <select id="priorityFilter"
-              class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500">
-              <option value="all">All</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-          </select>
+      <select id="priorityFilter"
+        class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500">
+        <option value="all">All</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
     </div>
 
     <!-- Task List -->
     <div id="task-list" class="mt-6 w-full max-w-[500px] bg-white rounded-lg shadow-md p-4"></div>
   </div>
 
- 
+
+
+
+  <script>
+    $("#view-dashboard").on("click", () => {
+      window.location.href = "dashboard.html"; // Navigate to dashboard
+    });
+    $("#view-daily-summary").on("click", () => {
+      window.location.href = "daily-summary.html";
+    });
+    $("#view-weekly-summary").on("click", () => {
+      window.location.href = "weekly-summary.html";
+    });
+  </script>
   <script type="module" src="/src/main.js"></script>
 </body>
 

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="src/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <title>Weekly Summary</title>
+</head>
+<body class="bg-slate-500">
+  <div class="flex justify-center flex-col items-center mt-6">
+    <div class="container max-w-[500px] m-[20px auto] p-5 bg-white rounded-lg shadow-md shadow-black">
+      <h1 class="text-lg font-bold">Weekly Summary</h1>
+      <button id="back-to-main"
+        class="mt-4 p-3 text-base font-bold text-black bg-blue-500 rounded-md cursor-pointer">Back to Main</button>
+    </div>
+    <div id="weekly-summary" class="mt-6 w-full max-w-[500px] bg-white rounded-lg shadow-md p-4"></div>
+  </div>
+  <script type="module" src="/src/weekly-summary.js"></script>
+</body>
+</html>

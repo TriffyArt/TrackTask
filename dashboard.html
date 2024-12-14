@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="src/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <title>Dashboard</title>
+</head>
+
+<body class="bg-slate-500">
+
+  <div class="flex justify-center flex-col items-center mt-6">
+    <div class="container w-full max-w-[500px] m-[20px auto] p-5 bg-white rounded-lg shadow-md shadow-black">
+      <h1 class="font-bold text-xl mb-4">Task Tracker Dashboard</h1>
+      
+      <!-- Links to different pages -->
+      <button id="view-main" class="mb-4 w-full p-3 text-base font-bold text-[#fff] bg-[#66fa95] border-none rounded-md cursor-pointer">
+        Go to Main Page
+      </button>
+      <button id="view-daily-summary" class="mb-4 w-full p-3 text-base font-bold text-[#fff] bg-[#66fa95] border-none rounded-md cursor-pointer">
+        View Daily Summary
+      </button>
+      <button id="view-weekly-summary" class="mb-4 w-full p-3 text-base font-bold text-[#fff] bg-[#66fa95] border-none rounded-md cursor-pointer">
+        View Weekly Summary
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/dashboard.js"></script>
+</body>
+
+</html>
