@@ -1,4 +1,4 @@
 export function getTasksFromStorage() {
-    return JSON.parse(localStorage.getItem("tasks")) || [];
-  }
-  
+  const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  return tasks;
+}

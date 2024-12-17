@@ -9,26 +9,96 @@
   <title>Dashboard</title>
 </head>
 
-<body class="bg-slate-500">
+<body class="bg-gray-100 min-h-screen font-sans text-gray-900">
 
-  <div class="flex justify-center flex-col items-center mt-6">
-    <div class="container w-full max-w-[500px] m-[20px auto] p-5 bg-white rounded-lg shadow-md shadow-black">
-      <h1 class="font-bold text-xl mb-4">Task Tracker Dashboard</h1>
-      
-      <!-- Links to different pages -->
-      <button id="view-main" class="mb-4 w-full p-3 text-base font-bold text-[#fff] bg-[#66fa95] border-none rounded-md cursor-pointer">
-        Go to Main Page
-      </button>
-      <button id="view-daily-summary" class="mb-4 w-full p-3 text-base font-bold text-[#fff] bg-[#66fa95] border-none rounded-md cursor-pointer">
-        View Daily Summary
-      </button>
-      <button id="view-weekly-summary" class="mb-4 w-full p-3 text-base font-bold text-[#fff] bg-[#66fa95] border-none rounded-md cursor-pointer">
-        View Weekly Summary
-      </button>
+  <!-- Navbar -->
+  <nav class="bg-white border-gray-200 dark:bg-gray-900">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+      <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">TrackTask</span>
+      <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+        <ul
+          class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          <li>
+            <button id="view-dashboard"
+              class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Dashboard</button>
+          </li>
+          <li>
+            <button id="view-main"
+              class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Tasks</button>
+          </li>
+          <li>
+            <button id="view-daily-summary"
+              class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Daily
+              Summary</button>
+          </li>
+          <li>
+            <button id="view-weekly-summary"
+              class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Weekly
+              Summary</button>
+          </li>
+        </ul>
+      </div>
     </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="flex flex-wrap justify-between mt-10 px-4 lg:px-20 gap-8">
+
+    <!-- Task Overview (Left Column) -->
+    <div class="w-full md:w-[65%] p-6 bg-white rounded-lg shadow-xl mb-6 md:mb-0">
+      <h2 class="text-2xl font-semibold mb-4 text-blue-600">Task Overview</h2>
+      <label for="priorityFilter" class="block text-sm font-medium mb-2 text-gray-700">Filter by Priority</label>
+      <select id="priorityFilter"
+        class="block w-full p-2 border-gray-300 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 mb-4">
+        <option value="all">All</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+      <div id="task-list" class="mt-4 bg-gray-50 p-4 rounded-md shadow-sm"></div>
+    </div>
+
+    <!-- Daily and Weekly Summary (Right Column) -->
+    <div class="w-full md:w-[30%] flex flex-col gap-6">
+
+      <!-- Daily Summary -->
+      <div class="bg-white p-4 rounded-lg shadow-xl">
+        <h3 class="text-lg font-semibold mb-4 text-blue-600">Daily Summary</h3>
+        <canvas id="daily-summary-chart" width="400" height="400"></canvas>
+        <div id="total-time-spent" class="mt-4 text-sm text-gray-600">Total time spent: --</div>
+      </div>
+
+      <!-- Weekly Summary -->
+      <div class="bg-white p-4 rounded-lg shadow-xl">
+        <h3 class="text-lg font-semibold mb-4 text-blue-600">Weekly Summary</h3>
+        <canvas id="weekly-summary-chart" class="w-full h-[200px]"></canvas>
+      </div>
+
+    </div>
+
   </div>
 
+  <script>
+    // Navigation button scripts
+    $("#view-dashboard").on("click", () => {
+      window.location.href = "dashboard.html";
+    });
+    $("#view-main").on("click", () => {
+      window.location.href = "index.html";
+    });
+    $("#view-daily-summary").on("click", () => {
+      window.location.href = "daily-summary.html";
+    });
+    $("#view-weekly-summary").on("click", () => {
+      window.location.href = "weekly-summary.html";
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/daily-summary.js"></script>
+  <script type="module" src="/src/weekly-summary.js"></script>
   <script type="module" src="/src/dashboard.js"></script>
+
 </body>
 
 </html>

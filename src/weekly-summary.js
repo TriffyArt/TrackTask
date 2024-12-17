@@ -4,7 +4,7 @@ $(document).ready(() => {
   function generateWeeklySummary() {
     const tasks = getTasksFromStorage();
     const grouped = tasks.reduce((acc, task) => {
-      const week = getWeek(task.date);
+      const week = getWeek(task.startTime); // Use startTime to categorize by week
       acc[week] = acc[week] || { completed: 0, pending: 0, elapsedTime: 0 };
       acc[week].completed += task.done ? 1 : 0;
       acc[week].pending += task.done ? 0 : 1;
@@ -15,8 +15,17 @@ $(document).ready(() => {
     const sortedWeeks = Object.keys(grouped).sort();
     const summaryDiv = $("#weekly-summary");
 
+    const labels = [];
+    const completedData = [];
+    const pendingData = [];
+    const elapsedTimeData = [];
+
     sortedWeeks.forEach((week) => {
       const summary = grouped[week];
+      labels.push(`Week ${week}`);
+      completedData.push(summary.completed);
+      pendingData.push(summary.pending);
+      elapsedTimeData.push(summary.elapsedTime);
       summaryDiv.append(`
         <div class="summary-item">
           <h3>Week ${week}</h3>
@@ -25,6 +34,56 @@ $(document).ready(() => {
           <p>Elapsed Time: ${formatTime(summary.elapsedTime)}</p>
         </div>
       `);
+    });
+
+    // Create the chart
+    const ctx = document.getElementById("weekly-summary-chart").getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Completed",
+            data: completedData,
+            backgroundColor: "rgba(0, 123, 255, 0.5)",
+            borderColor: "rgba(0, 123, 255, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "Pending",
+            data: pendingData,
+            backgroundColor: "rgba(220, 53, 69, 0.5)",
+            borderColor: "rgba(220, 53, 69, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "Elapsed Time",
+            data: elapsedTimeData,
+            backgroundColor: "rgba(40, 167, 69, 0.5)",
+            borderColor: "rgba(40, 167, 69, 1)",
+            borderWidth: 1,
+            yAxisID: "y-axis-time", // Use a different y-axis for time
+          },
+        ],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+          "y-axis-time": {
+            type: "linear",
+            position: "right",
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return formatTime(value); // Format elapsed time on the right axis
+              },
+            },
+          },
+        },
+      },
     });
   }
 
